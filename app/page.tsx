@@ -4,6 +4,7 @@ import { CONTRACT_ADDRESS } from "./constants";
 import { ABI } from "./constants";
 import { ethers } from "ethers";
 
+import { Card, CardHeader, CardBody, CardFooter, Heading, Stack, Box, Text,StackDivider,Divider, HStack, Button} from '@chakra-ui/react'
 
 declare global {
   interface Window {
@@ -13,7 +14,7 @@ declare global {
 
 
 const page = () => {
-
+  const [loading, setLoading] = useState(false);
   const [projects, setProjects] = useState<any[]>([]);
 
   const [staked, setStaked] = useState<number>(0)
@@ -95,13 +96,27 @@ const page = () => {
     }
   };
   
-  
+  const fundProject = async () => {
+    try {
+      console.log("funding")
+      setLoading(true);
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
 
+      const transaction = await contract.fundProject(4, {
+        value: ethers.parseEther('1') // Amount to fund the project (in ETH)
+      });
 
+      await transaction.wait();
+      console.log('Project funded successfully!');
+    } catch (error) {
+      console.error('Error funding project:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-
-
-  
   const createProject = async () => {
     try {
       const provider = new ethers.BrowserProvider(window.ethereum)
@@ -179,16 +194,47 @@ return (
         </button>
       </div>
       <div className="content-center w-full flex flex-col items-center">
+      <HStack spacing='24px'>
         {projects.map((project, index) => (
-          <div key={index} className="border border-gray-400 rounded-lg p-4 mt-4">
+          <Box key={index} >
+{/* 
             <h2 className="text-xl font-semibold">{project.name}</h2>
             <p className="text-gray-500">{project.description}</p>
             <p className="text-gray-500">Creator: {project.creator}</p>
             <p className="text-gray-500">Deadline: {project.deadline}</p>
             <p className="text-gray-500">Goal Amount: {project.goalAmount}</p>
-            <p className="text-gray-500">Raised Amount: {project.raisedAmount}</p>
-          </div>
+            <p className="text-gray-500">Raised Amount: {project.raisedAmount}</p> */}
+
+
+                    <Card maxW='sm'>
+            <CardBody>
+             
+              <Stack mt='6' spacing='3'>
+                <Heading size='md'>{project.name}</Heading>
+
+                Description:
+                <Text>
+                  {project.description}
+                </Text>
+                Creator
+                <Text color='blue.600'>
+               {project.creator}
+                </Text>
+              </Stack>
+            </CardBody>
+            <Divider />
+            <CardFooter>
+             <Button onClick={fundProject}>
+              Fund idea
+             </Button>
+            </CardFooter>
+          </Card>
+          </Box>
+
+
+          
         ))}
+        </HStack>
       </div>
     </div>
   );

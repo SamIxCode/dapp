@@ -3,7 +3,7 @@ async function main() {
 
     console.log("Deploying contracts with the account:", deployer.address);
 
-    const ContractFactory = await ethers.getContractFactory("Stake");
+    const ContractFactory = await ethers.getContractFactory("Crowdfunding");
     const contract = await ContractFactory.deploy();
 
     console.log("Contract address:", contract.target);

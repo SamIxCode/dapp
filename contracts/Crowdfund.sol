@@ -16,7 +16,7 @@ contract Crowdfunding {
     mapping(uint256 => Project) public projects;
     uint256 public projectCount;
 
-    event ProjectCreated(uint256 projectId, address creator, string name, string description, string socialLinks, uint256 deadline, uint256 goalAmount);
+    event ProjectCreated(uint256 projectId, address creator, string name, string description, uint256 deadline, uint256 goalAmount);
     event FundRaised(uint256 projectId, address backer, uint256 amount);
     event ProjectFunded(uint256 projectId, uint256 raisedAmount);
     event Vote(uint256 projectId, address voter, bool upvoted);
@@ -26,7 +26,13 @@ contract Crowdfunding {
         _;
     }
 
-function createProject(string memory name, string memory description, string memory socialLinks, uint256 duration, uint256 goalAmount) external {
+function createProject(
+    string memory name,
+    string memory description,
+    string memory socialLinks,
+    uint256 duration,
+    uint256 goalAmount
+) external {
     require(bytes(name).length > 0, "Project name must not be empty");
     require(bytes(description).length > 0, "Project description must not be empty");
     require(goalAmount > 0, "Goal amount must be greater than zero");
@@ -38,12 +44,13 @@ function createProject(string memory name, string memory description, string mem
     newProject.creator = msg.sender;
     newProject.name = name;
     newProject.description = description;
-    newProject.socialLinks = socialLinks;
+    newProject.socialLinks = socialLinks; // Update social links assignment
     newProject.deadline = deadline;
     newProject.goalAmount = goalAmount;
 
-    emit ProjectCreated(projectCount, msg.sender, name, description, socialLinks, deadline, goalAmount);
+    emit ProjectCreated(projectCount, msg.sender, name, description, deadline, goalAmount);
 }
+
 
 
     function fundProject(uint256 projectId) external payable projectExists(projectId) {

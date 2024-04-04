@@ -53,12 +53,6 @@ export const ABI = [
       },
       {
         "indexed": false,
-        "internalType": "string",
-        "name": "socialLinks",
-        "type": "string"
-      },
-      {
-        "indexed": false,
         "internalType": "uint256",
         "name": "deadline",
         "type": "uint256"
@@ -253,5 +247,5 @@ export const ABI = [
   }
 ]
 
-export const CONTRACT_ADDRESS = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
+export const CONTRACT_ADDRESS = "0x610178dA211FEF7D417bC0e6FeD39F05609AD788"
 

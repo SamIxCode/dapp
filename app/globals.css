@@ -3,6 +3,6 @@
 @tailwind utilities;
 
 * {
-    outline: 0.3px solid red;
+    outline: 0.2px solid red;
     /* You can adjust the color and thickness of the outline as needed */
 }

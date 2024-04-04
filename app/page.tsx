@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react'
 import { CONTRACT_ADDRESS } from "./constants";
 import { ABI } from "./constants";
 import { ethers } from "ethers";
-
-import { Card, CardHeader, CardBody, CardFooter, Heading, Stack, Box, Text,StackDivider,Divider, HStack, Button} from '@chakra-ui/react'
+import Nav from "@/components/navbar"
+import { Card, CardHeader, CardBody, CardFooter, Heading, Stack, Box, Text,StackDivider,Divider, HStack, Button, Flex, Wrap, WrapItem, Link} from '@chakra-ui/react'
 
 declare global {
   interface Window {
@@ -47,10 +47,11 @@ const page = () => {
 
 
   interface ProjectDetails {
+    id?: number
     creator: string;
     name: string;
     description: string;
-    socialLinks: string;
+    socialLinks: string[];
     deadline: any;
     goalAmount: any;
     raisedAmount: any;
@@ -61,7 +62,9 @@ const page = () => {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
       const project = await contract.projects(projectId);
+      
       return {
+        id:projectId,
         creator: project.creator,
         name: project.name,
         description: project.description,
@@ -96,7 +99,7 @@ const page = () => {
     }
   };
   
-  const fundProject = async () => {
+  const fundProject = async (projectId:number) => {
     try {
       console.log("funding")
       setLoading(true);
@@ -104,7 +107,7 @@ const page = () => {
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
 
-      const transaction = await contract.fundProject(4, {
+      const transaction = await contract.fundProject(projectId, {
         value: ethers.parseEther('1') // Amount to fund the project (in ETH)
       });
 
@@ -172,69 +175,71 @@ const page = () => {
   }
 
 return (
-    <div className="bg-slate-800 h-screen">
-      <div className="flex justify-center pt-5">
-        <h1 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
-          CrowdFund.
-        </h1>
-      </div>
-      <div className="content-center w-full flex justify-center">
-        <button className="text-white bg-slate-600 rounded-lg p-2" onClick={createProject}>
+    <div 
+    >
+<div>
+<Nav/>
+
+</div>
+
+    <HStack p={2} spacing={2} justify={'center'}> <Button  onClick={connectWallet}>
+          connect Wallet
+        </Button>
+
+        <Button 
+        as={Link}
+href='/create'
+        >
           Create
-        </button>
-      </div>
-      <div className="content-center w-full flex justify-center">
-        <button className="text-white bg-slate-600 rounded-lg p-2" onClick={getProjects}>
-          Get Project IDs
-        </button>
-      </div>
-      <div className="content-center w-full flex justify-center">
-        <button className="text-white bg-slate-600 rounded-lg p-2" onClick={getAllProjectsDetails}>
+        </Button>
+
+        <Button  onClick={getAllProjectsDetails}>
           Get All Projects Details
-        </button>
-      </div>
+        </Button>
+        </HStack>
+      
       <div className="content-center w-full flex flex-col items-center">
-      <HStack spacing='24px'>
+      <Wrap justify="center" spacing={"30px"}>
         {projects.map((project, index) => (
+           <WrapItem key={index}>
           <Box key={index} >
-{/* 
-            <h2 className="text-xl font-semibold">{project.name}</h2>
-            <p className="text-gray-500">{project.description}</p>
-            <p className="text-gray-500">Creator: {project.creator}</p>
-            <p className="text-gray-500">Deadline: {project.deadline}</p>
-            <p className="text-gray-500">Goal Amount: {project.goalAmount}</p>
-            <p className="text-gray-500">Raised Amount: {project.raisedAmount}</p> */}
 
 
-                    <Card maxW='sm'>
-            <CardBody>
-             
-              <Stack mt='6' spacing='3'>
-                <Heading size='md'>{project.name}</Heading>
 
-                Description:
-                <Text>
-                  {project.description}
-                </Text>
-                Creator
-                <Text color='blue.600'>
-               {project.creator}
-                </Text>
-              </Stack>
-            </CardBody>
-            <Divider />
-            <CardFooter>
-             <Button onClick={fundProject}>
-              Fund idea
-             </Button>
-            </CardFooter>
-          </Card>
+<Card maxW='sm'>
+  <CardHeader>
+    <Heading size='md'>{project.name}</Heading>
+  </CardHeader>
+  <CardBody>
+    <Stack spacing='3'>
+      <Text>Description: {project.description}</Text>
+      <Text>Creator: {project.creator}</Text>
+      <Text>Deadline: {new Date(Number(project.deadline) * 1000).toLocaleString()}</Text>
+      <Text>Goal Amount: {ethers.formatEther(project.goalAmount)} ETH</Text>
+      <Text>Raised Amount: {ethers.formatEther(project.raisedAmount)} ETH</Text>
+      <Text>Social Links:</Text>
+      <Stack spacing='1'>
+        {project.socialLinks.split(',').map((link:string, index:number) => (
+          <a key={index} href={link} target="_blank" rel="noopener noreferrer">{link}</a>
+        ))}
+      </Stack>
+
+      <Text>
+      {project.id}
+      </Text>
+    </Stack>
+  </CardBody>
+  <CardFooter>
+    <Button onClick={() => fundProject(project.id)}>Fund Idea</Button>
+  </CardFooter>
+</Card>
+
           </Box>
-
+          </WrapItem>
 
           
         ))}
-        </HStack>
+        </Wrap>
       </div>
     </div>
   );

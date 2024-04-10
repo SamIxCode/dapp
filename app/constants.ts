@@ -1,4 +1,4 @@
-export const ABI = [
+export const ABI =[
   {
     "anonymous": false,
     "inputs": [
@@ -114,6 +114,25 @@ export const ABI = [
   {
     "inputs": [
       {
+        "internalType": "uint256",
+        "name": "projectId",
+        "type": "uint256"
+      }
+    ],
+    "name": "compareTimestamps",
+    "outputs": [
+      {
+        "internalType": "bool[3]",
+        "name": "",
+        "type": "bool[3]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "string",
         "name": "name",
         "type": "string"
@@ -172,6 +191,19 @@ export const ABI = [
   },
   {
     "inputs": [],
+    "name": "getCurrentTimestamp",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "projectCount",
     "outputs": [
       {
@@ -220,6 +252,11 @@ export const ABI = [
       },
       {
         "internalType": "uint256",
+        "name": "timecreated",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
         "name": "goalAmount",
         "type": "uint256"
       },
@@ -227,6 +264,11 @@ export const ABI = [
         "internalType": "uint256",
         "name": "raisedAmount",
         "type": "uint256"
+      },
+      {
+        "internalType": "bool",
+        "name": "finished",
+        "type": "bool"
       }
     ],
     "stateMutability": "view",
@@ -247,5 +289,5 @@ export const ABI = [
   }
 ]
 
-export const CONTRACT_ADDRESS = "0x610178dA211FEF7D417bC0e6FeD39F05609AD788"
+export const CONTRACT_ADDRESS = "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0"
 

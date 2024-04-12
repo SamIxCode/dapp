@@ -17,7 +17,10 @@ import {
   useColorMode,
   Center,
   Heading,
+  Link,
 } from '@chakra-ui/react'
+
+import { SunIcon, MoonIcon } from '@chakra-ui/icons'
 
 
 interface Props {
@@ -56,10 +59,10 @@ export default function Nav() {
         <Box w={'full'}>
             <Center>
             <Box  w={"20%"}></Box>
-             <Heading mx={2}>CrowdFund.</Heading>
+             <Heading mx={2} as={Link} href='/' >CrowdFund.</Heading>
              <Box w={"20%"}>
               <Button onClick={toggleColorMode}>
-              Toggle {colorMode === 'light' ? 'Dark' : 'Light'}
+               {colorMode === 'light' ? <MoonIcon/> : <SunIcon/>}
       </Button>
               </Box>
              

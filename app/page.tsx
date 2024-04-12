@@ -149,6 +149,25 @@ const page = () => {
     incrementCount()
   };
   
+
+
+  const createProject = async () => {
+    try {
+      const provider = new ethers.BrowserProvider(window.ethereum)
+      const signer = await provider.getSigner()
+      const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer)
+
+      const tx = await contract.createProject('My Project', 'Description of My Project', 'https://twitter.com/myproject', 360, 1)
+      await tx.wait()
+      alert('Project created successfully!');
+
+} catch (error) {
+  console.error('Error creating project:', error);
+}
+    
+  }
+
+
   
   interface FundAmounts {
     [projectId: string]: string;
@@ -223,12 +242,9 @@ const page = () => {
 return (
     <div 
     >
-<div>
-<Nav/>
 
-</div>
 
-    <HStack p={5} spacing={2} justify={'center'}> 
+    <HStack my={6} p={5} spacing={2} justify={'center'}> 
     <Button  onClick={connectWallet}>
           connect Wallet
         </Button>
@@ -240,13 +256,13 @@ href='/create'
           Create
         </Button>
 
-
+    
         <Button onClick={toggleFilter} colorScheme={filterByCreator ? 'yellow' : 'gray'} >
           {filterByCreator ? 'Show All Projects' : 'Show My Projects'}
         </Button>
         
         <Button  onClick={getAllProjectsDetails}>
-          Get All Projects Details
+          Refresh
         </Button>
         </HStack>
       
@@ -334,8 +350,11 @@ href='/create'
         </Wrap>
       </div>
       
-      <SmallWithLogoLeft/>
+   
+    
     </div>
+
+    
   );
 }
 

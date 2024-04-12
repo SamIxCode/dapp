@@ -4,6 +4,7 @@ import {
   Box,
   chakra,
   Container,
+  Link,
   Stack,
   Text,
   useColorModeValue,
@@ -73,17 +74,15 @@ export default function SmallWithLogoLeft() {
         justify={{ base: 'center', md: 'space-between' }}
         align={{ base: 'center', md: 'center' }}>
         CrowdFund.
-        <Text>© 2022 Chakra Templates. All rights reserved</Text>
+        <Text>CrowdFund.</Text>
         <Stack direction={'row'} spacing={6}>
-          <SocialButton label={'Twitter'} href={'#'}>
+          <Link  href={'#'}>
          Twitter
-          </SocialButton>
-          <SocialButton label={'YouTube'} href={'#'}>
-           YT
-          </SocialButton>
-          <SocialButton label={'Instagram'} href={'#'}>
-            Instagram
-          </SocialButton>
+          </Link>
+          <Link  href={'#'}>
+           LinkedIn
+          </Link>
+ 
         </Stack>
       </Container>
     </Box>

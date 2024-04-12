@@ -11,41 +11,47 @@ const CreateProjectPage = () => {
     const [goalAmount, setGoalAmount] = useState('');
     const [deadline, setDeadline] = useState('');
     const [socialLinks, setSocialLinks] = useState(''); // Change to single string
-    const [socialLink, setSocialLink] = useState(''); 
+    const [socialLink, setSocialLink] = useState('');
     const [renderedSocialLinks, setRenderedSocialLinks] = useState<string[]>([]);
-    const [filterByCreator, setFilterByCreator] = useState(false); 
-    const handleCreateProject = async () => {
+    const [loading, setLoading] = useState(false);
+
+    const handleCreateProject = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault(); // Prevent default form submission behavior
+
         try {
+            setLoading(true); // Set loading state to true
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
             const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
 
             // Convert goal amount to ethers
             const goalAmountInWei = ethers.parseEther(goalAmount);
-            console.log("creating")
-            // Convert deadline to timestamp (in seconds)
-          // Convert deadline to timestamp (in seconds)
-        const now = Math.floor(Date.now() / 1000); // Current timestamp in seconds
-        const deadlineTimestamp = Math.floor(Date.parse(deadline) / 1000); // Deadline timestamp in seconds
 
-        const secondsUntilDeadline = deadlineTimestamp - now; // Calculate the difference
+            // Convert deadline to timestamp (in seconds)
+            const now = Math.floor(Date.now() / 1000); // Current timestamp in seconds
+            const deadlineTimestamp = Math.floor(Date.parse(deadline) / 1000); // Deadline timestamp in seconds
+            const secondsUntilDeadline = deadlineTimestamp - now; // Calculate the difference
 
             const socialLinksString = renderedSocialLinks.join(',');
+
             // Call the createProject function with the provided details
             const tx = await contract.createProject(
-                name, 
-                description, 
+                name,
+                description,
                 socialLinksString, // Pass concatenated social links
-                secondsUntilDeadline, 
+                secondsUntilDeadline,
                 goalAmountInWei
             );
-            console.log("sending trancsation")
+
             await tx.wait();
             alert('Project created successfully!');
         } catch (error) {
             console.error('Error creating project:', error);
+        } finally {
+            setLoading(false); // Reset loading state to false after transaction completes
         }
     };
+
     const handleAddSocialLink = () => {
         // Ensure the socialLink field is not empty
         if (socialLink.trim() !== '') {
@@ -65,42 +71,38 @@ const CreateProjectPage = () => {
             </Center>
             <Center >
                 <Box w={"70%"}>
-            <form onSubmit={handleCreateProject}>
-                <FormControl mt={6}>
-                    <FormLabel>Name</FormLabel>
-                    <Input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
-                </FormControl>
-                <FormControl mt={4}>
-                    <FormLabel>Description</FormLabel>
-                    <Textarea  value={description} onChange={(e) => setDescription(e.target.value)} required />
-                </FormControl>
-                <FormControl mt={4}>
-                    <FormLabel>Goal Amount (in ethers)</FormLabel>
-                    <Input type="number" value={goalAmount} onChange={(e) => setGoalAmount(e.target.value)} required />
-                </FormControl>
-                <FormControl mt={4}>
-                    <FormLabel>Deadline</FormLabel>
-                    <Input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} required />
-                </FormControl>
-                <FormControl mt={4}>
-                    <FormLabel>Social Links</FormLabel>
-                    <Input type="text" value={socialLink} onChange={(e) => setSocialLink(e.target.value)} />
-                    <Button type="button" onClick={handleAddSocialLink}>Add</Button>
+                    <form onSubmit={handleCreateProject}>
+                        <FormControl mt={6}>
+                            <FormLabel>Name</FormLabel>
+                            <Input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
+                        </FormControl>
+                        <FormControl mt={4}>
+                            <FormLabel>Description</FormLabel>
+                            <Textarea value={description} onChange={(e) => setDescription(e.target.value)} required />
+                        </FormControl>
+                        <FormControl mt={4}>
+                            <FormLabel>Goal Amount (in ethers)</FormLabel>
+                            <Input type="number" value={goalAmount} onChange={(e) => setGoalAmount(e.target.value)} required />
+                        </FormControl>
+                        <FormControl mt={4}>
+                            <FormLabel>Deadline</FormLabel>
+                            <Input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} required />
+                        </FormControl>
+                        <FormControl mt={4}>
+                            <FormLabel>Social Links</FormLabel>
+                            <Input type="text" value={socialLink} onChange={(e) => setSocialLink(e.target.value)} />
+                            <Button type="button" onClick={handleAddSocialLink}>Add</Button>
 
-                    {renderedSocialLinks.map((link: string, index: number) => (
-    <li key={index}>{link}</li>
-))}
-
-
-
-                </FormControl>
-                <Center mt={6}>
-                    <Button colorScheme="blue" type="submit">Create Project</Button>
-                </Center>
-            </form>
-            </Box>
+                            {renderedSocialLinks.map((link: string, index: number) => (
+                                <li key={index}>{link}</li>
+                            ))}
+                        </FormControl>
+                        <Center mt={6}>
+                            <Button colorScheme="blue" type="submit" isLoading={loading}>Create Project</Button>
+                        </Center>
+                    </form>
+                </Box>
             </Center>
-            
         </Box>
     );
 };

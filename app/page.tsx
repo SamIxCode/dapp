@@ -3,10 +3,8 @@ import React, { useState, useEffect } from 'react'
 import { CONTRACT_ADDRESS } from "./constants";
 import { ABI } from "./constants";
 import { ethers } from "ethers";
-import Nav from "@/components/navbar"
-import { Card, CardHeader, CardBody, CardFooter, Heading, Stack, Box, Text,StackDivider, HStack, Button, Flex, Wrap, WrapItem, Link, Progress, Input, Divider} from '@chakra-ui/react'
+import { Card, CardHeader, CardBody, CardFooter, Heading, Stack, Box, Text, StackDivider, HStack, Button, Flex, Wrap, WrapItem, Link, Progress, Input, Divider } from '@chakra-ui/react'
 
-import SmallWithLogoLeft from '@/components/footer';
 
 declare global {
   interface Window {
@@ -15,10 +13,10 @@ declare global {
 }
 
 
-const page = () => {
+const Page = () => {
   const [loading, setLoading] = useState(false);
   const [projects, setProjects] = useState<any[]>([]);
-  const [filterByCreator, setFilterByCreator] = useState(false); 
+  const [filterByCreator, setFilterByCreator] = useState(false);
 
   const [fundAmounts, setFundAmounts] = useState<FundAmounts>({});
   const [count, setCount] = useState(0)
@@ -45,8 +43,8 @@ const page = () => {
       return [];
     }
   };
-  
-  
+
+
 
 
   interface ProjectDetails {
@@ -60,15 +58,15 @@ const page = () => {
     raisedAmount: any;
     finished: boolean
   }
-  
+
   const getProjectDetails = async (projectId: number): Promise<ProjectDetails | null> => {
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
       const project = await contract.projects(projectId);
-      
+
       return {
-        id:projectId,
+        id: projectId,
         creator: project.creator,
         name: project.name,
         description: project.description,
@@ -76,20 +74,20 @@ const page = () => {
         deadline: project.deadline,
         goalAmount: project.goalAmount,
         raisedAmount: project.raisedAmount,
-        finished:project.finished
+        finished: project.finished
       };
     } catch (error) {
       console.error(`Error retrieving details for project ${projectId}:`, error);
       return null;
     }
   };
-  
+
   const getAllProjectsDetails = async () => {
     try {
       const ids = await getProjects();
       const projectDetailsPromises = ids.map(id => getProjectDetails(id));
       let allProjectDetails = await Promise.all(projectDetailsPromises);
-      
+
       // Filter projects based on the creator's address if filterByCreator is true
       if (filterByCreator) {
         const currentAddress = await getCurrentAddress();
@@ -102,13 +100,13 @@ const page = () => {
           });
         }
       }
-  
+
       setProjects(allProjectDetails);
     } catch (error) {
       console.error('Error retrieving all projects details:', error);
     }
   };
-  
+
   const getCurrentAddress = async () => {
     try {
       const provider = new ethers.BrowserProvider(window.ethereum);
@@ -119,12 +117,12 @@ const page = () => {
       return null;
     }
   };
-  
+
   const toggleFilter = () => {
     setFilterByCreator(prevState => !prevState);
   };
-  
-  
+
+
   const fundProject = async (projectId: number) => {
     try {
       console.log("funding");
@@ -137,7 +135,7 @@ const page = () => {
       const transaction = await contract.fundProject(projectId, {
         value: amountInWei, // Amount to fund the project (in ETH)
       });
-  
+
       await transaction.wait();
       console.log("Project funded successfully!");
     } catch (error) {
@@ -148,7 +146,7 @@ const page = () => {
 
     incrementCount()
   };
-  
+
 
 
   const createProject = async () => {
@@ -161,20 +159,20 @@ const page = () => {
       await tx.wait()
       alert('Project created successfully!');
 
-} catch (error) {
-  console.error('Error creating project:', error);
-}
-    
+    } catch (error) {
+      console.error('Error creating project:', error);
+    }
+
   }
 
 
-  
+
   interface FundAmounts {
     [projectId: string]: string;
   }
-  
 
-  const handleFundAmountChange =  (projectId: string, value: string) => {
+
+  const handleFundAmountChange = (projectId: string, value: string) => {
     setFundAmounts({
       ...fundAmounts,
       [projectId]: value,
@@ -187,13 +185,13 @@ const page = () => {
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = await provider.getSigner();
       const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
-  
+
       // Call the withdrawFunds function in your smart contract
       const transaction = await contract.withdrawFunds(projectId);
-  
+
       // Wait for the transaction to be confirmed
       await transaction.wait();
-  
+
       console.log("Funds withdrawn successfully for project with ID:", projectId);
     } catch (error) {
       console.error("Error withdrawing funds:", error);
@@ -202,8 +200,8 @@ const page = () => {
     }
     incrementCount()
   };
-  
-  
+
+
   useEffect(() => {
     getAllProjectsDetails();
   }, [filterByCreator, count]);
@@ -239,123 +237,123 @@ const page = () => {
 
   }
 
-return (
-    <div 
+  return (
+    <div
     >
 
 
-    <HStack my={6} p={5} spacing={2} justify={'center'}> 
-    <Button  onClick={connectWallet}>
+      <HStack my={6} p={5} spacing={2} justify={'center'}>
+        <Button onClick={connectWallet}>
           connect Wallet
         </Button>
 
-        <Button 
-        as={Link}
-href='/create'
+        <Button
+          as={Link}
+          href='/create'
         >
           Create
         </Button>
 
-    
+
         <Button onClick={toggleFilter} colorScheme={filterByCreator ? 'yellow' : 'gray'} >
           {filterByCreator ? 'Show All Projects' : 'Show My Projects'}
         </Button>
-        
-        <Button  onClick={getAllProjectsDetails}>
+
+        <Button onClick={getAllProjectsDetails}>
           Refresh
         </Button>
-        </HStack>
-      
+      </HStack>
+
       <div className="content-center w-full flex flex-col items-center">
-      <Wrap justify="center" spacing={"30px"}>
-        {projects.map((project, index) => (
-           <WrapItem key={index}>
-          <Box key={index} >
+        <Wrap justify="center" spacing={"30px"}>
+          {projects.map((project, index) => (
+            <WrapItem key={index}>
+              <Box key={index} >
 
 
 
-<Card maxW='sm'  boxShadow='dark-lg' rounded='md'>
-  <CardHeader>
-    <Heading mb={2} size='lg'>{project.name}</Heading>
-    <Divider/>
-  </CardHeader>
-  <CardBody>
-    <Stack spacing='3'>
-      <Text as={'b'}  >Description: </Text>
-      
-      <Text>{project.description} </Text>
-      <Divider/>
-      <Text fontSize='sm' >Creator: {project.creator}</Text>
-      <Divider/>
-      <Text fontSize='sm' >Deadline: {new Date(Number(project.deadline) * 1000).toLocaleString()}</Text>
-      <Divider/>
-      <Text fontSize='sm' >Goal Amount: {ethers.formatEther(project.goalAmount)} ETH</Text>
-      <Divider/>
-      <Text fontSize='sm' >Raised Amount: {ethers.formatEther(project.raisedAmount)} ETH</Text>
-      <Divider/>
-      <Text>Social Links:</Text>
-      <Stack spacing='1'>
-        {project.socialLinks.split(',').map((link:string, index:number) => (
-          <Link my={3} key={index} href={link} target="_blank" rel="noopener noreferrer">{link}</Link>
-        ))}
-      </Stack>
+                <Card maxW='sm' boxShadow='dark-lg' rounded='md'>
+                  <CardHeader>
+                    <Heading mb={2} size='lg'>{project.name}</Heading>
+                    <Divider />
+                  </CardHeader>
+                  <CardBody>
+                    <Stack spacing='3'>
+                      <Text as={'b'}  >Description: </Text>
 
-      
-    </Stack>
-    <Divider/>
-    <HStack mt={3} justify={"space-between"}>
-      <Text mx={2}>{ethers.formatEther(project.raisedAmount)}</Text>
-      <Text  mx={2}>{ethers.formatEther(project.goalAmount)}</Text>
-    </HStack>
-    <Progress rounded={'lg'} value={(parseFloat(ethers.formatEther(project.raisedAmount)) / parseFloat(ethers.formatEther(project.goalAmount))) * 100} />
-  </CardBody>
-  <CardFooter>
-  {project.finished ? (
-    <Text>Project is finished</Text>
-  ) : (
-    <HStack justify={"space-between"}>
-      {filterByCreator ? (
-
-<>
-        <Button onClick={() => withdrawFunds(project.id)}
-        isDisabled={Number(project.deadline) * 1000 > Date.now()}>Withdraw</Button>
-        <Text hidden={Number(project.deadline) * 1000 < Date.now()}>Withdraw is only possible after the deadline is reached.</Text>
-        </>
+                      <Text>{project.description} </Text>
+                      <Divider />
+                      <Text fontSize='sm' >Creator: {project.creator}</Text>
+                      <Divider />
+                      <Text fontSize='sm' >Deadline: {new Date(Number(project.deadline) * 1000).toLocaleString()}</Text>
+                      <Divider />
+                      <Text fontSize='sm' >Goal Amount: {ethers.formatEther(project.goalAmount)} ETH</Text>
+                      <Divider />
+                      <Text fontSize='sm' >Raised Amount: {ethers.formatEther(project.raisedAmount)} ETH</Text>
+                      <Divider />
+                      <Text>Social Links:</Text>
+                      <Stack spacing='1'>
+                        {project.socialLinks.split(',').map((link: string, index: number) => (
+                          <Link my={3} key={index} href={link} target="_blank" rel="noopener noreferrer">{link}</Link>
+                        ))}
+                      </Stack>
 
 
-      ) : (
-        <>
-          <Box w={"60%"}>
-            <Input
-              type="number"
-              placeholder="ETH"
-              value={fundAmounts[project.id] || ''}
-              onChange={(e) => handleFundAmountChange(project.id, e.target.value)}
-            />
-          </Box>
-          <Button onClick={() => fundProject(project.id)}>Fund Idea</Button>
-        </>
-      )}
-    </HStack>
-  )}
-</CardFooter>
+                    </Stack>
+                    <Divider />
+                    <HStack mt={3} justify={"space-between"}>
+                      <Text mx={2}>{ethers.formatEther(project.raisedAmount)}</Text>
+                      <Text mx={2}>{ethers.formatEther(project.goalAmount)}</Text>
+                    </HStack>
+                    <Progress rounded={'lg'} value={(parseFloat(ethers.formatEther(project.raisedAmount)) / parseFloat(ethers.formatEther(project.goalAmount))) * 100} />
+                  </CardBody>
+                  <CardFooter>
+                    {project.finished ? (
+                      <Text>Project is finished</Text>
+                    ) : (
+                      <HStack justify={"space-between"}>
+                        {filterByCreator ? (
 
-</Card>
+                          <>
+                            <Button onClick={() => withdrawFunds(project.id)}
+                              isDisabled={Number(project.deadline) * 1000 > Date.now()}>Withdraw</Button>
+                            <Text hidden={Number(project.deadline) * 1000 < Date.now()}>Withdraw is only possible after the deadline is reached.</Text>
+                          </>
 
-          </Box>
-          </WrapItem>
 
-          
-        ))}
+                        ) : (
+                          <>
+                            <Box w={"60%"}>
+                              <Input
+                                type="number"
+                                placeholder="ETH"
+                                value={fundAmounts[project.id] || ''}
+                                onChange={(e) => handleFundAmountChange(project.id, e.target.value)}
+                              />
+                            </Box>
+                            <Button onClick={() => fundProject(project.id)}>Fund Idea</Button>
+                          </>
+                        )}
+                      </HStack>
+                    )}
+                  </CardFooter>
+
+                </Card>
+
+              </Box>
+            </WrapItem>
+
+
+          ))}
         </Wrap>
       </div>
-      
-   
-    
+
+
+
     </div>
 
-    
+
   );
 }
 
-export default page
+export default Page
